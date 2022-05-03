@@ -1,21 +1,21 @@
 import requests
 import json
-from datetime import datetime as dt
 import os
-import matplotlib.pyplot as plt
 
 class SolarDB():
 
     def __init__(self):
         self.__baseURL = "https://solardb.univ-reunion.fr/api/v1/"
-        self.__cookies = ""
+        self.__cookies = None
+        self.show_message = True
+        ## Automatically logs in SolarDB if the token is saved in the '~/.bashrc' file
         token = os.environ.get('SolarDBToken')
         if token is not None:
             self.login(token)
             self.status()
         else:
             print("You will need to use your token to log in SolarDB")    
-    
+
 
     ## Methods to log in SolarDB----------------------------------------------------------
 
@@ -31,7 +31,7 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -46,8 +46,7 @@ class SolarDB():
             self.__cookies = res.cookies
             print(json.loads(res.content)["message"])
         except requests.exceptions.HTTPError:
-            message = json.loads(res.content)["message"]
-            print("login -> HTTP Error: ", message)
+            print("login -> HTTP Error: ", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
             print("login -> Connection Error:",errc)
         except requests.exceptions.Timeout as errt:
@@ -67,7 +66,7 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -81,8 +80,7 @@ class SolarDB():
             res.raise_for_status()
             print(json.loads(res.content)["message"])
         except requests.exceptions.HTTPError:
-            message = json.loads(res.content)["message"]
-            print("register -> HTTP Error: ", message)
+            print("register -> HTTP Error: ", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
             print("register -> Connection Error:",errc)
         except requests.exceptions.Timeout as errt:
@@ -92,12 +90,12 @@ class SolarDB():
 
     def status(self):
         """
-        This method is used to verify that you are still logged in.
+        This method is used to verify if you are still logged in.
 
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -123,7 +121,7 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -138,7 +136,7 @@ class SolarDB():
             print(json.loads(res.content)["message"])
             self.__cookies = None
         except requests.exceptions.HTTPError:
-            message = json.loads(res.content)["message"]
+            print("logout -> HTTP Error: ", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
             print("logout -> Connection Error:",errc)
         except requests.exceptions.Timeout as errt:
@@ -160,7 +158,7 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -175,11 +173,11 @@ class SolarDB():
             res.raise_for_status()
             for i in range(len(json.loads(res.content)["data"])):
                 sites.append(json.loads(res.content)["data"][i])
-            print("All data sites succesfully extracted from SolarDB")
+            if self.show_message:
+                print("All data sites successfully extracted from SolarDB")
             return sites
         except requests.exceptions.HTTPError:
-            message = json.loads(res.content)["message"]
-            print("getAllSites -> HTTP Error: ", message)
+            print("getAllSites -> HTTP Error: ", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
             print("getAllSites -> Connection Error:",errc)
         except requests.exceptions.Timeout as errt:
@@ -193,12 +191,12 @@ class SolarDB():
 
         Returns
         -------
-            A list containing the dat types extracted from SolarDB.
+            A list containing the data types extracted from SolarDB.
 
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -213,7 +211,8 @@ class SolarDB():
             res.raise_for_status()
             for i in range(len(json.loads(res.content)["data"])):
                 types.append(json.loads(res.content)["data"][i])
-            print("All data types sucesfully extracted from SolarDB")
+            if self.show_message:
+                print("All data types successfully extracted from SolarDB")
             return types
         except requests.exceptions.HTTPError:
             message = json.loads(res.content)["message"]
@@ -227,7 +226,7 @@ class SolarDB():
 
     def getAllSensors(self, sites = None, types = None):
         """
-        A method used to the different sensors contained in SolarDB into a list. If the sites and/or types are defined, the method will extract only the sensors corresponding to the specified request.
+        A method used recover to the different sensors contained in SolarDB. If the sites and/or types are defined, the method will extract only the sensors corresponding to the specified request.
 
         Parameters
         ----------
@@ -238,12 +237,12 @@ class SolarDB():
 
         Returns
         -------
-        A list containing the sensors recovered
+        A list containing the sensors extracted from SolarDB
 
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -266,7 +265,8 @@ class SolarDB():
             res.raise_for_status()
             for i in range(len(json.loads(res.content)["data"])):
                 sensors.append(json.loads(res.content)["data"][i])
-            print("All sensors succesfully extracted from SolarDB")
+            if self.show_message:
+                print("All sensors successfully extracted from SolarDB")
             return sensors
         except requests.exceptions.HTTPError:
             message = json.loads(res.content)["message"]
@@ -280,24 +280,24 @@ class SolarDB():
 
     def getData(self, sites = None, types = None, sensors = None, start = None, stop = None, aggrFn = None, aggrEvery = None):
         """
-        A method used to search and recover the data associated to one or more sites, sensors and/or types present in SolarDB. Using the paramters 'aggrFn' and 'aggrEvery' it is possible to apply an aggregation to the data extracted.
+        A method used to search and recover the data associated to one or more sites, sensors and/or types present in SolarDB. Using the paramters 'aggrFn' and 'aggrEvery', it is possible to apply an aggregation to the data extracted.
 
         Parameters
         ----------
         sites : list[str]
-            This list is used to specify the sites in which we will search the data.
+            This list is used to specify the sites for which we will search the data.
         types : list[str]
             This list is used to specify sensor types used to recover the data.
         sensors : list[str]
             This list is used to specify the sensors used to recover the data.
         start : str
-            This string specifies the starting date for the data recovery. it can either follow a date format (e.g RFC3339) or work as a substraction of a time value from now (e.g '-4y' = four years ago). It is set to 24h ago by default
+            This string specifies the starting date for the data recovery. it can either follow a date format (e.g RFC3339) or work as a substraction of a time value from now (e.g '-4y' = four years ago). It is set to 24h ago by default.
         stop : str
-            This string specifies the ending date for the data recovery. it can either follow a date format (e.g RFC3339) or work as a substraction of a time value from now (e.g '-4y' = four years ago). it is set to now by default.
+            This string specifies the ending date for the data recovery. it can either follow a date format (e.g RFC3339) or work as a substraction of a time value from now (e.g '-4y' = four years ago). It is set to the current date (flux function 'now()') by default.
         aggrFn : str
             This string represents the function to apply for the aggregation (e.g 'mean', 'count', 'min', 'max'). If different from None, it is necessary to specify the aggregation period
         aggrEvery : str
-            This string represents the period for the aggregation (e.g '1mo' = every month). If different from None it is necessary to specify the aggregation function.
+            This string represents the period for the aggregation (e.g '1mo' = every month while '10m' = every 10 minutes). If different from None it is necessary to specify the aggregation function.
 
         Returns
         -------
@@ -314,7 +314,7 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -329,7 +329,7 @@ class SolarDB():
         if types is not None:
             args += "&type=" + ','.join(types)
         if sensors is not None:
-            args += "&sensor=" + ','.join(sensors)
+            args += "&sensorid=" + ','.join(sensors)
         if start is not None:
             args += "&start=" + start
         if stop is not None:
@@ -345,11 +345,12 @@ class SolarDB():
             res = requests.get(query, cookies=self.__cookies)
             res.raise_for_status()
             data = json.loads(res.content)["data"]
-            if data:
-                print("Data succesfully recovered")
-                return data
-            else:
-                print("There is no data for this particular request")
+            if self.show_message:
+                if data:
+                    print("Data successfully recovered")
+                else:
+                    print("There is no data for this particular request")
+            return data
         except requests.exceptions.HTTPError:
             message = json.loads(res.content)["message"]
             print("getData -> HTTP Error: ", message)
@@ -362,7 +363,7 @@ class SolarDB():
 
     def getBounds(self, sites = None, types = None, sensors = None):
         """
-        A method used to search and recover the temporal bounds associated to one or more sites, sensors and/or types contained in SolarDB.
+        A method used to search and recover the temporal bounds associated to one or more sites, sensors and/or types present in SolarDB.
 
         Parameters
         ----------
@@ -388,7 +389,7 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -405,7 +406,7 @@ class SolarDB():
         if types is not None:
             args += "&type=" + ','.join(types)
         if sensors is not None:
-            args += "&sensor" + ','.join(sensors)
+            args += "&sensorid=" + ','.join(sensors)
         if args != "":
             query += "?" + args
         
@@ -413,11 +414,12 @@ class SolarDB():
             res = requests.get(query, cookies=self.__cookies)
             res.raise_for_status()
             bounds = json.loads(res.content)["data"]
-            if bounds:
-                print("Bounds succesfully recovered")
-                return bounds
-            else:
-                print("The bounds defined by this request do not exist")
+            if self.show_message:
+                if bounds:
+                    print("Bounds successfully recovered")
+                else:
+                    print("The bounds defined by this request are null")
+            return bounds
         except requests.exceptions.HTTPError:
             message = json.loads(res.content)["message"]
             print("getBounds -> HTTP Error: ", message)
@@ -437,12 +439,14 @@ class SolarDB():
 
         Parameters
         ----------
-        sites : list[str]
-            This list is used to specify the sites for which we will search the bounds.
-        types : list[str]
-            This list is used to specify sensor types used to recover the bounds.
-        sensors : list[str]
-            This list is used to specify the sensors used to recover the bounds.
+        ids : str
+            This string is the identity key. It corresponds to the '_id' field in the Mongo 'campaigns' collection.
+        name : str
+            This corresponds to the station official name and is associated to the 'name' field in the Mongo 'campaigns' collection.
+        territory : str
+            This string represents the territory name and is associated to the 'territory' field in the Mongo 'campaigns' collection.
+        alias : str
+            This string is the site practical name (which is used for data extraction) and is associated to the 'alias' field in the Mongo 'campaigns' collection.
 
         Returns
         -------
@@ -451,7 +455,7 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -478,11 +482,12 @@ class SolarDB():
             res = requests.get(query, cookies=self.__cookies)
             res.raise_for_status()
             campaigns = json.loads(res.content)["data"]
-            if campaigns:
-                print("Campaign metadata succesfully recovered")
-                return campaigns
-            else:
-                print("The campaigns defined by this request do not exist")
+            if self.show_message:
+                if campaigns:
+                    print("Campaign metadata successfully recovered")
+                else:
+                    print("The campaigns defined by this request do not exist")
+            return campaigns
         except requests.exceptions.HTTPError:
             message = json.loads(res.content)["message"]
             print("getCampaigns -> HTTP Error: ", message)
@@ -499,12 +504,14 @@ class SolarDB():
 
         Parameters
         ----------
-        sites : list[str]
-            This list is used to specify the sites for which we will search the instruments.
-        types : list[str]
-            This list is used to specify sensor types used to recover the instruments.
-        sensors : list[str]
-            This list is used to specify the sensors used to recover the instruments.
+        ids : str
+            This string is the identity key. It corresponds to the '_id' field in the Mongo 'instruments' collection.
+        name : str
+            This corresponds to the station official name and is associated to the 'name' field in the Mongo 'instruments' collection.
+        label : str
+            This string represents the instrument's label and is associated to the 'label' field in the Mongo 'instruments' collection.
+        serial : str
+            This string is the instrument's serial number and is associated to the 'serial' field in the Mongo 'instruments' collection.
 
         Returns
         -------
@@ -513,7 +520,7 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -540,11 +547,12 @@ class SolarDB():
             res = requests.get(query, cookies=self.__cookies)
             res.raise_for_status()
             instruments = json.loads(res.content)["data"]
-            if instruments:
-                print("Instrument metadata succesfully recovered")
-                return instruments
-            else:
-                print("The intstruments defined by this request do not exist")
+            if self.show_message:
+                if instruments:
+                    print("Instrument metadata successfully recovered")
+                else:
+                    print("The intstruments defined by this request do not exist")
+            return instruments
         except requests.exceptions.HTTPError:
             message = json.loads(res.content)["message"]
             print("getInstruments -> HTTP Error: ", message)
@@ -555,18 +563,20 @@ class SolarDB():
         except requests.exceptions.RequestException as err:
             print("getInstruments -> Request Error: ",err)
 
-    def getMeasures(self, ids = None, name = None, dtype = None):
+    def getMeasures(self, ids = None, name = None, dtype = None, nested = None):
         """
         A method used to recover the different measure types used in the IOS-Net project. Specifying the id, name and/or data type will narrow down the measures recovered.
 
         Parameters
         ----------
-        sites : list[str]
-            This list is used to specify the sites for which we will search the measures.
-        types : list[str]
-            This list is used to specify sensor types used to recover the measures.
-        sensors : list[str]
-            This list is used to specify the sensors used to recover the measures.
+        ids : str
+            This string is the identity key. It corresponds to the '_id' field in the Mongo 'measures' collection.
+        name : str
+            This corresponds to the station official name and is associated to the 'name' field in the Mongo 'measures' collection.
+        dtype : str
+            This string represents the data type and is associated to the 'type' field in the Mongo 'measures' collection.
+        nested : bool
+            This boolean, which is false by default, indicates whether the user wants to recieve all the metadata or only key metadata information associated to the measures.
 
         Returns
         -------
@@ -575,7 +585,7 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -593,6 +603,8 @@ class SolarDB():
             args += "&name=" + name
         if dtype is not None:
             args += "&type=" + dtype
+        if nested is not None:
+            args += "&nested=" + str(nested)
         if args != "":
             query + "?" + args
         
@@ -600,11 +612,12 @@ class SolarDB():
             res = requests.get(query, cookies=self.__cookies)
             res.raise_for_status()
             measures = json.loads(res.content)["data"]
-            if measures:
-                print("Measure metadata succesfully recovered")
-                return measures
-            else:
-                print("The measures defined by this request do not exist")
+            if self.show_message:
+                if measures:
+                    print("Measure metadata successfully recovered")
+                else:
+                    print("The measures defined by this request do not exist")
+            return measures
         except requests.exceptions.HTTPError:
             message = json.loads(res.content)["message"]
             print("getMeasures -> HTTP Error: ", message)
@@ -621,12 +634,12 @@ class SolarDB():
 
         Parameters
         ----------
-        sites : list[str]
-            This list is used to specify the sites for which we will search the models.
-        types : list[str]
-            This list is used to specify sensor types used to recover the models.
-        sensors : list[str]
-            This list is used to specify the sensors used to recover the models.
+        ids : str
+            This string is the identity key. It corresponds to the '_id' field in the Mongo 'models' collection.
+        name : str
+            This corresponds to the station official name and is associated to the 'name' field in the Mongo 'models' collection.
+        dtype : str
+            This string represents the data type and is associated to the 'type' field in the Mongo 'models' collection.
 
         Returns
         -------
@@ -635,7 +648,7 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -660,11 +673,12 @@ class SolarDB():
             res = requests.get(query, cookies=self.__cookies)
             res.raise_for_status()
             models = json.loads(res.content)["data"]
-            if models:
-                print("Models metadata succesfully recovered")
-                return models
-            else:
-                print("The measures defined by this request do not exist")
+            if self.show_message:
+                if models:
+                    print("Models metadata successfully recovered")
+                else:
+                    print("The measures defined by this request do not exist")
+            return models
         except requests.exceptions.HTTPError:
             message = json.loads(res.content)["message"]
             print("getModels -> HTTP Error: ", message)
@@ -674,24 +688,3 @@ class SolarDB():
             print("getModels -> Timeout Error:",errt)
         except requests.exceptions.RequestException as err:
             print("getModels -> Request Error: ",err)
-
-
-
-
-# if __name__=="__main__":
-#     d = SolarDB()
-#     d.login("b64ed57ae6d2d599ce66af58e9bad0bd1abe76d4")
-#     print("\n\nTests concerning the data\n\n")
-#     print(d.getAllSites()[0])
-#     print(d.getAllTypes()[-1])
-#     print(d.getAllSensors()[1])
-#     print(d.getData(types=["DHI"], start="-2mo", aggrFn="count", aggrEvery="2d").keys())
-#     print(d.getBounds(types=["DHI","RR"]))
-#     print("\n\nTests concerning the metadata\n\n")
-#     print(d.getCampaigns())
-#     print(d.getInstruments())
-#     print(d.getMeasures())
-#     print(d.getModels())
-#     d.status()
-#     d.logout()
-#     d.status()
