@@ -1,14 +1,15 @@
 # pySolarDB
+
 Python library to access LE2P solar database SolarDB
 
-Source code accessible via the github repository: https://github.com/LE2P/pySolarDB
+Source code accessible via the github repository: [pySolarDB](https://github.com/LE2P/pySolarDB)
 
 ## Installation
 
-Using pip
+Using pip3
 
 ```sh
-pip install pysolardb
+pip3 install pysolardb
 ```
 
 __Suggestion__: You will need a token to allow data access.
@@ -28,7 +29,7 @@ Keep in mind that the requests will sometimes result in empty answers. Leaving `
 
 __Note__: You can configure the '~/.bashrc' file in your home directory to allow the library to automatically recover and use your authentication token.
 
-In the '~/.bashrc' file:
+In the `~/.bashrc` file:
 
 ```sh
 export SolarDBToken=YOUR_AUTHENTICATION_TOKEN
