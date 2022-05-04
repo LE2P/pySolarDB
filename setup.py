@@ -7,10 +7,10 @@ setup(
     name='pysolardb',
     version='0.1.0',
     description='Package used to access the LE2P solar database SolarDB',
-    url='https://github.com/LE2P/pySolarDB/tree/main/pysloardb',
+    url='https://github.com/LE2P/pySolarDB',
     author='Emmanuel Parfait',
     author_email='manuparfait@gmail.com',
-    licence='MIT',
+    license='MIT',
     include_package_data=True,
     packages=['pysolardb'],
     install_requires=['os'
@@ -20,6 +20,14 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     classifiers=[
-
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Science/Research',
+        'Intended Audience :: Education',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Natural Language :: English',
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python :: 3.10',
+        'Topic :: Scientific/Engineering'
     ]
 )
