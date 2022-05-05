@@ -17,7 +17,26 @@ class SolarDB():
         else:
             self.logger.warning("You will need to use your token to log in SolarDB")    
 
-    def setloggerLevel(self, val):
+    def setloggerLevel(self, val:int):
+        """
+        Changes the logging level.
+        It is used to enable and/or disable the messages.
+        
+        Parameters
+        ----------
+        val : str
+            This integer represents the logging level as follows:
+            - 0  : NOTSET
+            - 10 (or logging.DEBUG)     : DEBUG
+            - 20 (or logging.INFO)      : INFO
+            - 30 (or logging.WARN)   : WARNING
+            - 40 (or logging.ERROR)     : ERROR
+            - 50 (ot logging.CRITICAL)  : CRITICAL
+            The levels allow all the logging levels with a higher severity(e.g a
+            logging.INFO level will disable all messages marked with logging.DEBUG). If
+            val is set to 0/logging.NOTSET, the logging level will be set to the root
+            level, which is WARN.
+        """
         # remove all handlers
         while self.logger.hasHandlers():
             self.logger.removeHandler(self.logger.handlers[0])
@@ -28,9 +47,9 @@ class SolarDB():
 
     ## Methods to log in SolarDB----------------------------------------------------------
 
-    def login(self, token):
+    def login(self, token:str):
         """
-        This method is used to log in the SolarDB API.
+        Gives access of SolarDB
 
         Parameters
         ----------
@@ -40,7 +59,8 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem 
+            with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -55,7 +75,10 @@ class SolarDB():
             self.__cookies = res.cookies
             self.logger.debug(json.loads(res.content)["message"])
         except requests.exceptions.HTTPError:
-            self.logger.warning("login -> HTTP Error: ", json.loads(res.content)["message"])
+            self.logger.warning(
+                                "login -> HTTP Error: ",
+                                json.loads(res.content)["message"]
+                                )
         except requests.exceptions.ConnectionError as errc:
             self.logger.warning("login -> Connection Error:",errc)
         except requests.exceptions.Timeout as errt:
@@ -63,9 +86,9 @@ class SolarDB():
         except requests.exceptions.RequestException as err:
             self.logger.warning("login -> Request Error: ",err)
 
-    def register(self, email):
+    def register(self, email:str):
         """
-        This method is used get the key (AKA the token) to log in SolarDB. It sends a mail to the user which contains the token.
+        Sends a token via email.
 
         Parameters
         ----------
@@ -75,7 +98,8 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem 
+            with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -99,12 +123,14 @@ class SolarDB():
 
     def status(self):
         """
-        This method is used to verify if you are still logged in. It becomes obsolete id the logging level is higher than INFO.
+        This method is used to verify if you are still logged in. It becomes obsolete if
+        the logging level is higher than INFO.
 
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem
+            with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -119,18 +145,19 @@ class SolarDB():
         except requests.exceptions.ConnectionError as errc:
             self.logger.warning("status -> Connection Error:",errc)
         except requests.exceptions.Timeout as errt:
-            self.logger.warning("stauts -> Timeout Error:",errt)
+            self.logger.warning("status -> Timeout Error:",errt)
         except requests.exceptions.RequestException as err:
-            self.logger.warning("stauts -> Request Error: ",err)
+            self.logger.warning("status -> Request Error: ",err)
 
     def logout(self):
         """
-        This method is used to log out of SolarDB.
+        Logs out of SolarDB.
 
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem
+            with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -158,16 +185,17 @@ class SolarDB():
 
     def getAllSites(self):
         """
-        This method is used to recover all the sites contained in SolarDB.
+        Returns all the alias sites accessible through SolarDB.
 
         Returns
         -------
-            A list containing the sites extracted from SolarDB.
+            A list every alias site present in SolarDB.
 
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem
+            with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -195,16 +223,17 @@ class SolarDB():
 
     def getAllTypes(self):
         """
-        This method is used to recover all the data types contained in SolarDB.
+        Returns all the data types accessible through SolarDB.
 
         Returns
         -------
-            A list containing the data types extracted from SolarDB.
+            A list every data type present in SolarDB.
 
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem
+            with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -230,15 +259,16 @@ class SolarDB():
         except requests.exceptions.RequestException as err:
             self.logger.warning("getAllTypes -> Request Error: ",err)
 
-    def getAllSensors(self, sites = None, types = None):
+    def getSensors(self, sites:list[str] = None, types:list[str] = None):
         """
-        A method used recover to the different sensors contained in SolarDB. If the sites and/or types are defined, the method will extract only the sensors corresponding to the specified request.
+        Returns sensors present in SolarDB by sites and/or types.
+        If no sites or types are given, returns all sensors present in SolarDB
 
         Parameters
         ----------
-        sites : list[str]
+        sites : list[str] (OPTIONAL)
             This list is used to specify the sites in which we will search the sensors.
-        types : list[str]
+        types : list[str] (OPTIONAL)
             This list is used to specify sensor types to recover.
 
         Returns
@@ -248,7 +278,8 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem
+            with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -273,17 +304,28 @@ class SolarDB():
             self.logger.debug("All sensors successfully extracted from SolarDB")
             return sensors
         except requests.exceptions.HTTPError:
-            self.logger.warning("getAllSensors -> HTTP Error: ", json.loads(res.content)["message"])
+            self.logger.warning("getSensors -> HTTP Error: ", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
-            self.logger.warning("getAllSensors -> Connection Error:",errc)
+            self.logger.warning("getSensors -> Connection Error:",errc)
         except requests.exceptions.Timeout as errt:
-            self.logger.warning("getAllSensors -> Timeout Error:",errt)
+            self.logger.warning("getSensors -> Timeout Error:",errt)
         except requests.exceptions.RequestException as err:
-            self.logger.warning("getAllSensors -> Request Error: ",err)
+            self.logger.warning("getSensors -> Request Error: ",err)
 
-    def getData(self, sites = None, types = None, sensors = None, start = None, stop = None, aggrFn = None, aggrEvery = None):
+    def getData(
+                self,
+                sites:list[str] = None,
+                types:list[str] = None,
+                sensors:list[str] = None,
+                start:str = None,
+                stop:str = None,
+                aggrFn:str = None,
+                aggrEvery:str = None
+                ):
         """
-        A method used to search and recover the data associated to one or more sites, sensors and/or types present in SolarDB. Using the paramters 'aggrFn' and 'aggrEvery', it is possible to apply an aggregation to the data extracted.
+        Extracts data associated to at least one site, sensor and/or type. The user can
+        choose the time period on which the extraction is set (set on the last 24h by
+        default) and define an aggregation for a better analysis.
 
         Parameters
         ----------
@@ -293,18 +335,34 @@ class SolarDB():
             This list is used to specify sensor types used to recover the data.
         sensors : list[str]
             This list is used to specify the sensors used to recover the data.
-        start : str
-            This string specifies the starting date for the data recovery. it can either follow a date format (e.g RFC3339) or work as a substraction of a time value from now (e.g '-4y' = four years ago). It is set to 24h ago by default.
-        stop : str
-            This string specifies the ending date for the data recovery. it can either follow a date format (e.g RFC3339) or work as a substraction of a time value from now (e.g '-4y' = four years ago). It is set to the current date (flux function 'now()') by default.
-        aggrFn : str
-            This string represents the function to apply for the aggregation (e.g 'mean', 'count', 'min', 'max'). If different from None, it is necessary to specify the aggregation period
-        aggrEvery : str
-            This string represents the period for the aggregation (e.g '1mo' = every month while '10m' = every 10 minutes). If different from None it is necessary to specify the aggregation function.
+        start : str (OPTIONAL)
+            This string specifies the starting date for the data recovery. It either follows
+            a date format, an RFC3339 date format, or a duration unit respecting the '[N][T]'
+            format, where [N] is an integer and [T] is one of the following strings:
+            * 'y'   : year
+            * 'mo'  : month
+            * 'w'   : week
+            * 'd'   : day
+            * 'h'   : hour
+            * 'm'   : minute
+            Example: '-24d' == 24 days ago
+        stop : str (OPTIONAL)
+            This string specifies the ending date for the data recovery. It follows the same
+            format as "start".
+        aggrFn : str (OPTIONAL)
+            This string represents the function to apply for the aggregation, such as:
+            * 'mean'    : the average value
+            * 'min'     : the minimum value
+            * 'max'     : the maximum value
+            * 'count'   : the number of non-null value
+        aggrEvery : str (OPTIONAL)
+            This string represents the period for the aggregation. It follows the duration
+            unit format defined previously.
 
         Returns
         -------
-            A dictionary containing the data per site and sensor. It is structured as follows:
+            A dictionary containing the data per site and sensor. It is structured as 
+            follows:
             data{
                 site{
                     sensor{
@@ -317,7 +375,8 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem
+            with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -362,9 +421,15 @@ class SolarDB():
         except requests.exceptions.RequestException as err:
             self.logger.warning("getData -> Request Error: ",err)
 
-    def getBounds(self, sites = None, types = None, sensors = None):
+    def getBounds(
+                  self,
+                  sites:list[str] = None,
+                  types:list[str] = None,
+                  sensors:list[str] = None
+                  ):
         """
-        A method used to search and recover the temporal bounds associated to one or more sites, sensors and/or types present in SolarDB.
+        Extracts the temporal bounds of each sensor associated to at least one site, sensor
+        and/or type.
 
         Parameters
         ----------
@@ -377,7 +442,7 @@ class SolarDB():
 
         Returns
         -------
-            A dictionary containing the bounds per site and sensor. It is structured as follows:
+            A dictionary containing the bounds per site and sensor structured as follows:
             data{
                 site{
                     sensor{
@@ -390,7 +455,8 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem
+            with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -432,20 +498,32 @@ class SolarDB():
 
     ## Methods to recover the metadata ----------------------------------------------------
     
-    def getCampaigns(self, ids = None, name = None, territory = None, alias = None):
+    def getCampaigns(
+                     self,
+                     ids:str = None,
+                     name:str = None,
+                     territory:str = None,
+                     alias:str = None
+                     ):
         """
-        A method used to recover the different campaigns that took place during the IOS-Net project. Specifying the id, name, territory and/or alias will narrow down the campaigns recovered.
+        Extracts the different campaigns that took place during the IOS-Net project.
+        Specifying the campaign id, name, territory and/or alias will narrow down the
+        campaigns recovered.
 
         Parameters
         ----------
-        ids : str
-            This string is the identity key. It corresponds to the '_id' field in the Mongo 'campaigns' collection.
-        name : str
-            This corresponds to the station official name and is associated to the 'name' field in the Mongo 'campaigns' collection.
-        territory : str
-            This string represents the territory name and is associated to the 'territory' field in the Mongo 'campaigns' collection.
-        alias : str
-            This string is the site practical name (which is used for data extraction) and is associated to the 'alias' field in the Mongo 'campaigns' collection.
+        ids : str (OPTIONAL)
+            This string is the identity key. It corresponds to the '_id' field in the Mongo
+            'campaigns' collection.
+        name : str (OPTIONAL)
+            This corresponds to the station official name and is associated to the 'name'
+            field in the Mongo 'campaigns' collection.
+        territory : str (OPTIONAL)
+            This string represents the territory name and is associated to the 'territory'
+            field in the Mongo 'campaigns' collection.
+        alias : str (OPTIONAL)
+            This string is the site practical name (which is used for data extraction) and
+            is associated to the 'alias' field in the Mongo 'campaigns' collection.
 
         Returns
         -------
@@ -454,7 +532,8 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem
+            with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -495,20 +574,31 @@ class SolarDB():
         except requests.exceptions.RequestException as err:
             self.logger.warning("getCampaigns -> Request Error: ",err)
 
-    def getInstruments(self, ids = None, name = None, label = None, serial = None):
+    def getInstruments(
+                       self,
+                       ids:str = None,
+                       name:str = None,
+                       label:str = None,
+                       serial:str = None
+                       ):
         """
-        A method used to recover the different instruments used in the IOS-Net project. Specifying the id, name, label and/or serial number will narrow down the instruments recovered.
+        Returns the different instruments used in the IOS-Net project. Specifying the id,
+        name, label and/or serial number will narrow down the instruments recovered.
 
         Parameters
         ----------
-        ids : str
-            This string is the identity key. It corresponds to the '_id' field in the Mongo 'instruments' collection.
-        name : str
-            This corresponds to the station official name and is associated to the 'name' field in the Mongo 'instruments' collection.
-        label : str
-            This string represents the instrument's label and is associated to the 'label' field in the Mongo 'instruments' collection.
-        serial : str
-            This string is the instrument's serial number and is associated to the 'serial' field in the Mongo 'instruments' collection.
+        ids : str (OPTIONAL)
+            This string is the identity key. It corresponds to the '_id' field in the Mongo
+            'instruments' collection.
+        name : str (OPTIONAL)
+            This corresponds to the station official name and is associated to the 'name'
+            field in the Mongo 'instruments' collection.
+        label : str (OPTIONAL)
+            This string represents the instrument's label and is associated to the 'label'
+            field in the Mongo 'instruments' collection.
+        serial : str (OPTIONAL)
+            This string is the instrument's serial number and is associated to the 'serial'
+            field in the Mongo 'instruments' collection.
 
         Returns
         -------
@@ -517,7 +607,8 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem
+            with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -558,20 +649,31 @@ class SolarDB():
         except requests.exceptions.RequestException as err:
             self.logger.warning("getInstruments -> Request Error: ",err)
 
-    def getMeasures(self, ids = None, name = None, dtype = None, nested = None):
+    def getMeasures(
+                    self,
+                    ids:str = None,
+                    name:list[str] = None,
+                    dtype:str = None,
+                    nested:bool = None
+                    ):
         """
-        A method used to recover the different measure types used in the IOS-Net project. Specifying the id, name and/or data type will narrow down the measures recovered.
+        Extracts the different measure types used in the IOS-Net project. Specifying the id,
+        name and/or data type will narrow down the measures recovered.
 
         Parameters
         ----------
-        ids : str
-            This string is the identity key. It corresponds to the '_id' field in the Mongo 'measures' collection.
-        name : str
-            This corresponds to the station official name and is associated to the 'name' field in the Mongo 'measures' collection.
-        dtype : str
-            This string represents the data type and is associated to the 'type' field in the Mongo 'measures' collection.
-        nested : bool
-            This boolean, which is false by default, indicates whether the user wants to recieve all the metadata or only key metadata information associated to the measures.
+        ids : str (OPTIONAL)
+            This string is the identity key. It corresponds to the '_id' field in the Mongo
+            'measures' collection.
+        name : str (OPTIONAL)
+            This corresponds to the station official name and is associated to the 'name' field
+            in the Mongo 'measures' collection.
+        dtype : list[str] (OPTIONAL)
+            This string represents the data type and is associated to the 'type' field in the
+            Mongo 'measures' collection.
+        nested : bool (OPTIONAL)
+            This boolean, which is false by default, indicates whether the user wants to recieve
+            all the metadata or only key metadata information associated to the measures.
 
         Returns
         -------
@@ -580,7 +682,8 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem
+            with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError
@@ -621,18 +724,27 @@ class SolarDB():
         except requests.exceptions.RequestException as err:
             self.logger.warning("getMeasures -> Request Error: ",err)
 
-    def getModels(self, ids = None, name = None, dtype = None):
+    def getModels(
+                  self,
+                  ids:str = None,
+                  name:str = None,
+                  dtype:str = None
+                  ):
         """
-        A method used to recover the models used in the IOS-Net project. Specifying the id, name and/or data type will narrow down the models recovered.
+        Returns the models used in the IOS-Net project. Specifying the id, name and/or data
+        type will narrow down the models recovered.
 
         Parameters
         ----------
-        ids : str
-            This string is the identity key. It corresponds to the '_id' field in the Mongo 'models' collection.
-        name : str
-            This corresponds to the station official name and is associated to the 'name' field in the Mongo 'models' collection.
-        dtype : str
-            This string represents the data type and is associated to the 'type' field in the Mongo 'models' collection.
+        ids : str (OPTIONAL)
+            This string is the identity key. It corresponds to the '_id' field in the Mongo
+            'models' collection.
+        name : str (OPTIONAL)
+            This corresponds to the station official name and is associated to the 'name'
+            field in the Mongo 'models' collection.
+        dtype : str (OPTIONAL)
+            This string represents the data type and is associated to the 'type' field in
+            the Mongo 'models' collection.
 
         Returns
         -------
@@ -641,7 +753,8 @@ class SolarDB():
         Raises
         ------
         HTTPError
-            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem with the request or the server)
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem
+            with the request or the server)
         ConnectionError
             If the program is unable to connect to SolarDB
         TimeOutError

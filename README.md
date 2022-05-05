@@ -21,15 +21,17 @@ from pysolardb.SolarDB import SolarDB
 solar=SolarDB()
 ```
 
-you can disable part of the messages by setting a new logging level for the SolarDB object:
+You can disable part of the messages by setting a new logging level for the SolarDB object:
 
 ```python
 import logging
 
 solar.setloggerLevel(logging.WARNING)
+# using and integer
+solar.setloggerLevel(10)
 ```
 
-Keep in mind that the requests will sometimes result in empty answers. `solar.setLoggerLevel(logging.INFO)` will help in finding such cases.
+Keep in mind that the requests will sometimes result in empty answers. `solar.setLoggerLevel(20)` will help find such cases.
 
 ## Utils methods: Register, Login, Status and Logout
 
@@ -43,7 +45,7 @@ export SolarDBToken=YOUR_AUTHENTICATION_TOKEN
 
 ### Register
 
-If you do not already possess a token, use the `register` method to recieve a new one by email:
+If you do not already possess a token, use the `register` method to receive a new one by email:
 
 ```python
 solar.register(email="YOUR_EMAIL_ADDRESS")
@@ -59,11 +61,16 @@ solar.login(token="YOUR_AUTHENTICATION_TOKEN")
 
 ### Status
 
+The `status` method verifies if the user is still logged in SolarDB.
+
 ```python
 solar.status()
 ```
+ __Remark__: This method becomes obsolete for logging levels higher than INFO.
 
 ### Logout
+
+The `logout` method disables the access to SolarDB data.
 
 ```python
 solar.logout()
@@ -71,7 +78,7 @@ solar.logout()
 
 ## Recovering the sites, types and sensors list
 
-### Sites
+### Sites recovery
 
 The `getAllSites` method returns a list of strings containing all the alias sites present in SolarDB.
 
@@ -79,7 +86,7 @@ The `getAllSites` method returns a list of strings containing all the alias site
 solar.getAllSites()
 ```
 
-### Types
+### Types recovery
 
 The `getAllTypes` method returns a list of strings containing all the data types present in SolarDB.
 
@@ -87,16 +94,16 @@ The `getAllTypes` method returns a list of strings containing all the data types
 solar.getAllTypes()
 ```
 
-### Sensors
+### Sensors recovery
 
-The `getAllSensors` method returns a list of strings containing all the sensor IDs.To narrow down the sensors, use the following parameters:
+The `getSensors` method returns a list of strings containing the sensor IDs extracted from SolarDB. To narrow down the sensors, use the following parameters:
 - sites : list[str] (optional)
 - types : list[str] (optional)
 
 ```python
-solar.getAllSensors()
-# to search only the diffuse irradiance sensors at Le Port Mairie
-solar.getAllSensors(sites=["leportmairie"], types=["DHI"])
+solar.getSensors()
+# search the diffuse and global irradiance sensors at Le Port Mairie
+solar.getSensors(sites=["leportmairie"], types=["DHI","GHI"])
 ```
 
 ## Data collection
@@ -115,7 +122,7 @@ The `getData` method recovers all the data associated to a list of alias sites, 
 - aggrEvery : string (optional)
 
 ```python
-# get the last 2 months global irradiance values from Vacaos and Plaine Des Palmistes Parc National taking the average value for each day
+# get the global irradiance values from Vacaos and Plaine Des Palmistes Parc National taking the average value for each day over the last 2 months
 data = solar.getData(sites=["plaineparcnational","vacoas"], types=["GHI"], start="-2y", aggrFn="mean", aggrEvery="1w")
 ```
 
@@ -130,7 +137,7 @@ dtype = ["GHI"]
 data = solar.getData(sites=alias, types=dtype, start="-2y", aggrFn="mean", aggrEvery="1d")
 
 # extract the dates and values for Vacoas from the 'data' dictionary
-sensors = solar.getAllSensors(sites=["plaineparcnational"], types=["GHI"])
+sensors = solar.getSensors(sites=["plaineparcnational"], types=["GHI"])
 
 plt.figure()
 for sensor in sensors:
@@ -140,7 +147,7 @@ for sensor in sensors:
     # put the dates to a datetime format
     dates = [dt.strptime(date, "%Y-%m-%dT%H:%M:%SZ") for date in dates]
 
-    # plot the average global irradiance per week for the last 2 y
+    # plot the average global irradiance per day for the last 2 years
 
     plt.plot(dates, values)
 plt.legend(labels=sensors)
@@ -149,16 +156,16 @@ plt.show()
 
 ### Get the sensors' active period for specific sites
 
-The `getBounds` method returns a dictionary containing the starting per sensor per site. it takes at least one of the following the parameters:
+The `getBounds` method returns a dictionary containing the active time period per sensor per site. it takes at least one of the following the parameters:
 - sites : list[string] (optional)
 - types : list[string] (optional)
 - sensors : list[string] (optional)
 
 ```python
-# get the temporal bounds of each sensor at Le Port Mairie and Piton Des Neiges
+# get the temporal bounds of each sensor at Saint Louis Lycée Jean Joly
 alias= ['saintlouisjeanjoly']
 dtype = ['GHI']
-sensors = solar.getAllSensors(types=dtype, sites=alias)
+sensors = solar.getSensors(types=dtype, sites=alias)
 bounds = []
 for sensor in sensors:
     bound = solar.getBounds(sites=alias, types=dtype, sensors=[sensor])
