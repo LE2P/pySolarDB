@@ -554,8 +554,8 @@ class SolarDB():
         if alias is not None:
             args += "&alias=" + alias
         if args != "":
-            query + "?" + args
-        
+            query += "?" + args
+
         try:
             res = requests.get(query, cookies=self.__cookies)
             res.raise_for_status()
@@ -629,7 +629,7 @@ class SolarDB():
         if serial is not None:
             args += "&serial=" + serial
         if args != "":
-            query + "?" + args
+            query += "?" + args
         
         try:
             res = requests.get(query, cookies=self.__cookies)
@@ -704,7 +704,7 @@ class SolarDB():
         if nested is not None:
             args += "&nested=" + str(nested)
         if args != "":
-            query + "?" + args
+            query += "?" + args
         
         try:
             res = requests.get(query, cookies=self.__cookies)
@@ -773,7 +773,7 @@ class SolarDB():
         if dtype is not None:
             args += "&type=" + dtype
         if args != "":
-            query + "?" + args
+            query += "?" + args
         
         try:
             res = requests.get(query, cookies=self.__cookies)

@@ -17,7 +17,7 @@ __Suggestion__: You will need a token to allow data access.
 In the following, we  will use an instance of the `SolarDB` class as an example.
 
 ```python
-from pySolarDB.pysolardb.SolarDB import SolarDB
+from pysolardb.SolarDB import SolarDB
 solar=SolarDB()
 ```
 
