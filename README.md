@@ -212,7 +212,7 @@ The `getMeasures` method recovers the metadata that is associated with the diffe
 
 ```python
 solar.getMeasures()
-# get the metadat for UV measures
+# get the metadata for UV measures
 solar.getMeasures(type="UVAB")
 ```
 

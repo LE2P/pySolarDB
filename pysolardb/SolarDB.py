@@ -652,7 +652,7 @@ class SolarDB():
     def getMeasures(
                     self,
                     ids:str = None,
-                    name:list[str] = None,
+                    names:list[str] = None,
                     dtype:str = None,
                     nested:bool = None
                     ):
@@ -665,8 +665,8 @@ class SolarDB():
         ids : str (OPTIONAL)
             This string is the identity key. It corresponds to the '_id' field in the Mongo
             'measures' collection.
-        name : str (OPTIONAL)
-            This corresponds to the station official name and is associated to the 'name' field
+        names : list[str] (OPTIONAL)
+            This corresponds to the sensor/s name/s and is associated to the 'name' field
             in the Mongo 'measures' collection.
         dtype : list[str] (OPTIONAL)
             This string represents the data type and is associated to the 'type' field in the
@@ -697,8 +697,8 @@ class SolarDB():
         args = ""
         if ids is not None:
             args += "&id=" + ids
-        if name is not None:
-            args += "&name=" + name
+        if names is not None:
+            args += "&name=" + ','.join(names)
         if dtype is not None:
             args += "&type=" + dtype
         if nested is not None:
