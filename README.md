@@ -23,7 +23,7 @@ from pysolardb.SolarDB import SolarDB
 solar=SolarDB()
 ```
 
-__Note__: You will be notified if a newer version of the package exists on Pypi when the SolarDB bject is created.
+__Note__: You will be notified if a newer version of the package exists on Pypi when the SolarDB object is created.
 
 You can disable part of the messages by setting a new logging level for the SolarDB object:
 
@@ -184,7 +184,7 @@ the `getSiteDataframe` method returns a pandas dataframe containing the data ass
 
 ```python
 # get the pandas dataframe of the data for Amitié over the last week
-df = solar.getSiteDataframe(site="Amitié", start="-1w")
+df = solar.getSiteDataframe(site="amitie", start="-1w")
 print(df)
 # save the pandas dataframe in a CSV file
 df.to_csv("FILEPATH"+"FILENAME.csv")

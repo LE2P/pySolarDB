@@ -5,7 +5,8 @@ import logging
 import outdated
 import pandas as pd
 from io import StringIO
-from __init__ import __version__
+import __init__
+
 
 class SolarDB():
 
@@ -864,12 +865,10 @@ class SolarDB():
         __ch.setLevel(val)
         self.logger.addHandler(__ch)
 
-
     def checkIfOutdated(self):
         """
         Checks if the current version of this package is the latest.
         """
-        is_outdated, latest_version = outdated.check_outdated("pysolardb", __version__)
+        is_outdated, latest_version = outdated.check_outdated("pysolardb", __init__.__version__)
         if is_outdated:
             print("A newer version of the pySolarDB package is currently available: pysolardb ", latest_version)
-    
