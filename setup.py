@@ -5,7 +5,7 @@ with open("README.md", "r") as readme:
 
 setup(
     name='pysolardb',
-    version='0.1.3',
+    version='0.1.4',
     description='Package used to access the LE2P solar database SolarDB',
     url='https://github.com/LE2P/pySolarDB',
     author='Emmanuel Parfait',
@@ -14,7 +14,8 @@ setup(
     include_package_data=True,
     packages=['pysolardb'],
     install_requires=[
-                      'requests>=2.25.1'
+                      'requests>=2.25.1',
+                      'pandas>=1.4.2'
                       ],
     long_description=long_description,
     long_description_content_type='text/markdown',

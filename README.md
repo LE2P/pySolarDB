@@ -4,12 +4,14 @@ Python library to access LE2P solar database SolarDB
 
 Source code accessible via the github repository: [pySolarDB](https://github.com/LE2P/pySolarDB)
 
+__REQUIREMENT__: You will need to use a python more recent than python 3.10 (included)
+
 ## Installation
 
-Using pip3
+Using pip
 
 ```python
-pip3 install pysolardb
+pip install pysolardb
 ```
 
 __Suggestion__: You will need a token to allow data access.
@@ -21,6 +23,8 @@ from pysolardb.SolarDB import SolarDB
 solar=SolarDB()
 ```
 
+__Note__: You will be notified if a newer version of the package exists on Pypi when the SolarDB bject is created.
+
 You can disable part of the messages by setting a new logging level for the SolarDB object:
 
 ```python
@@ -28,7 +32,7 @@ import logging
 
 solar.setloggerLevel(logging.WARNING)
 # using and integer
-solar.setloggerLevel(10)
+solar.setloggerLevel(30)
 ```
 
 Keep in mind that the requests will sometimes result in empty answers. `solar.setLoggerLevel(20)` will help find such cases.
@@ -174,11 +178,23 @@ for sensor in sensors:
 print("\n".join(bounds))
 ```
 
+### Dataframe recovery
+
+the `getSiteDataframe` method returns a pandas dataframe containing the data associated to a site for a requested time period. this dataframe can then be converted to a CSV file using the pandas library:
+
+```python
+# get the pandas dataframe of the data for Amitié over the last week
+df = solar.getSiteDataframe(site="Amitié", start="-1w")
+print(df)
+# save the pandas dataframe in a CSV file
+df.to_csv("FILEPATH"+"FILENAME.csv")
+```
+
 ## Metadata recovery
 
 ### Recover the campaigns' metadata
 
-the `getCampaigns` method is used to recover the metadata associated with the different campaigns of the IOS-Net project in a dictionary. You can use the following parameters:
+The `getCampaigns` method is used to recover the metadata associated with the different campaigns of the IOS-Net project in a dictionary. You can use the following parameters:
 - id : string (optional)
 - name : string (optional)
 - territory : string (optional)

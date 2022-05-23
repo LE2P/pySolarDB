@@ -2,10 +2,15 @@ import requests
 import json
 import os
 import logging
+import outdated
+import pandas as pd
+from io import StringIO
+from __init__ import __version__
 
 class SolarDB():
 
     def __init__(self):
+        self.checkIfOutdated()
         self.__baseURL = "https://solardb.univ-reunion.fr/api/v1/"
         self.__cookies = None
         self.logger = logging.getLogger(__name__)
@@ -17,33 +22,6 @@ class SolarDB():
         else:
             self.logger.warning("You will need to use your token to log in SolarDB")    
 
-    def setloggerLevel(self, val:int):
-        """
-        Changes the logging level.
-        It is used to enable and/or disable the messages.
-        
-        Parameters
-        ----------
-        val : str
-            This integer represents the logging level as follows:
-            - 0  : NOTSET
-            - 10 (or logging.DEBUG)     : DEBUG
-            - 20 (or logging.INFO)      : INFO
-            - 30 (or logging.WARN)   : WARNING
-            - 40 (or logging.ERROR)     : ERROR
-            - 50 (ot logging.CRITICAL)  : CRITICAL
-            The levels allow all the logging levels with a higher severity(e.g a
-            logging.INFO level will disable all messages marked with logging.DEBUG). If
-            val is set to 0/logging.NOTSET, the logging level will be set to the root
-            level, which is WARN.
-        """
-        # remove all handlers
-        while self.logger.hasHandlers():
-            self.logger.removeHandler(self.logger.handlers[0])
-        self.logger.setLevel(val)
-        __ch = logging.StreamHandler()
-        __ch.setLevel(val)
-        self.logger.addHandler(__ch)
 
     ## Methods to log in SolarDB----------------------------------------------------------
 
@@ -299,8 +277,7 @@ class SolarDB():
         try:
             res = requests.get(query, cookies=self.__cookies)
             res.raise_for_status()
-            for i in range(len(json.loads(res.content)["data"])):
-                sensors.append(json.loads(res.content)["data"][i])
+            sensors = json.loads(res.content)["data"]
             self.logger.debug("All sensors successfully extracted from SolarDB")
             return sensors
         except requests.exceptions.HTTPError:
@@ -792,3 +769,107 @@ class SolarDB():
             self.logger.warning("getModels -> Timeout Error:",errt)
         except requests.exceptions.RequestException as err:
             self.logger.warning("getModels -> Request Error: ",err)
+
+
+    ## Utils
+
+    def getSiteDataframe(self, site:str, start:str = None, stop:str = None):
+        """
+        Extracts a CSV file containing the data associated to a site and converts it into
+        a pandas dataframe object. The user can choose the time period on which the extraction
+        is set (set on the last 24h by default).
+
+        Parameters
+        ----------
+        site : str
+            This string is used to specify the site chosen by the user.
+        start : str (OPTIONAL)
+            This string specifies the starting date for the data recovery. It either follows
+            a date format, an RFC3339 date format, or a duration unit respecting the '[N][T]'
+            format, where [N] is an integer and [T] is one of the following strings:
+            * 'y'   : year
+            * 'mo'  : month
+            * 'w'   : week
+            * 'd'   : day
+            * 'h'   : hour
+            * 'm'   : minute
+            Example: '-24d' == 24 days ago
+        stop : str (OPTIONAL)
+            This string specifies the ending date for the data recovery. It follows the same
+            format as "start".
+
+        Returns
+        -------
+            A Pandas dataframe containing the data for each sensor of the site on the requested
+            time period.
+
+        Raises
+        ------
+        HTTPError
+            If the responded HTTP Status is between 400 and 600 (i.e if there is a problem
+            with the request or the server)
+        ConnectionError
+            If the program is unable to connect to SolarDB
+        TimeOutError
+            If the SolarDB response is too slow
+        RequestException
+            In case an error that is unaccounted for happens
+        """
+        query = self.__baseURL + "data/csv/" + site
+        args = ""
+        if start is not None:
+            args += "&start=" + start
+        if stop is not None:
+            args += "&stop=" + stop
+        if args != "":
+            query += "?" + args
+        try:
+            res = requests.get(query, cookies=self.__cookies)
+            res.raise_for_status()
+            df = pd.read_csv(StringIO(res.text))
+            return df
+        except requests.exceptions.HTTPError:
+            self.logger.warning("getData -> HTTP Error: ", json.loads(res.content)["message"])
+        except requests.exceptions.ConnectionError as errc:
+            self.logger.warning("getData -> Connection Error:",errc)
+        except requests.exceptions.Timeout as errt:
+            self.logger.warning("getData -> Timeout Error:",errt)
+        except requests.exceptions.RequestException as err:
+            self.logger.warning("getData -> Request Error: ",err)
+
+    def setloggerLevel(self, val:int):
+        """
+        Changes the logging level. It is used to enable and/or disable the messages.
+        
+        Parameters
+        ----------
+        val : str
+            This integer represents the logging level as follows:
+            - 0  : NOTSET
+            - 10 (or logging.DEBUG)     : DEBUG
+            - 20 (or logging.INFO)      : INFO
+            - 30 (or logging.WARN)      : WARNING
+            - 40 (or logging.ERROR)     : ERROR
+            - 50 (ot logging.CRITICAL)  : CRITICAL
+            The levels allow all the logging levels with a higher severity to appear
+            (e.g a logging.INFO level will disable all messages marked with logging.DEBUG).
+            If val is set to 0/logging.NOTSET, the logging level will be set to the root level,
+            which is WARNING.
+        """
+        # remove all handlers
+        while self.logger.hasHandlers():
+            self.logger.removeHandler(self.logger.handlers[0])
+        self.logger.setLevel(val)
+        __ch = logging.StreamHandler()
+        __ch.setLevel(val)
+        self.logger.addHandler(__ch)
+
+
+    def checkIfOutdated(self):
+        """
+        Checks if the current version of this package is the latest.
+        """
+        is_outdated, latest_version = outdated.check_outdated("pysolardb", __version__)
+        if is_outdated:
+            print("A newer version of the pySolarDB package is currently available: pysolardb ", latest_version)
+    
