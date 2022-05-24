@@ -20,22 +20,25 @@ In the following, we  will use an instance of the `SolarDB` class as an example.
 
 ```python
 from pysolardb.SolarDB import SolarDB
-solar=SolarDB()
+
+solar=SolarDB(token="YOUR_TOKEN")
+# if the token is already saved in the environment
+solar=SolarDB(logging_level=20)
 ```
 
 __Note__: You will be notified if a newer version of the package exists on Pypi when the SolarDB object is created.
 
-You can disable part of the messages by setting a new logging level for the SolarDB object:
+You can disable part of the messages by setting the `logging_level`during the instanciation or by using `setLoggerLevel`:
 
 ```python
 import logging
 
-solar.setloggerLevel(logging.WARNING)
+solar.setLoggerLevel(logging.WARNING)
 # using and integer
-solar.setloggerLevel(30)
+solar.setLoggerLevel(30)
 ```
 
-Keep in mind that the requests will sometimes result in empty answers. `solar.setLoggerLevel(20)` will help find such cases.
+Keep in mind that the requests will sometimes result in empty answers. Setting the logger level to a lower level might help identifying such cases.
 
 ## Utils methods: Register, Login, Status and Logout
 

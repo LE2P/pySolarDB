@@ -5,23 +5,20 @@ import logging
 import outdated
 import pandas as pd
 from io import StringIO
-
-__version__ = "0.1.6"
+from . import sample
 
 class SolarDB():
 
-    def __init__(self):
+    def __init__(self, token:str = None, logging_level:int = 10):
         self.checkIfOutdated()
         self.__baseURL = "https://solardb.univ-reunion.fr/api/v1/"
         self.__cookies = None
         self.logger = logging.getLogger(__name__)
-        self.setloggerLevel(logging.INFO)
+        self.setLoggerLevel(logging_level)
         ## Automatically logs in SolarDB if the token is saved in the '~/.bashrc' file
-        token = os.environ.get('SolarDBToken')
-        if token is not None:
-            self.login(token)
-        else:
-            self.logger.warning("You will need to use your token to log in SolarDB")    
+        if token is None:
+            token = os.environ.get('SolarDBToken')
+        self.login(token)   
 
 
     ## Methods to log in SolarDB----------------------------------------------------------
@@ -49,10 +46,13 @@ class SolarDB():
         """
 
         try:
-            res = requests.get(self.__baseURL + "login?token=" + token)
-            res.raise_for_status()
-            self.__cookies = res.cookies
-            self.logger.debug(json.loads(res.content)["message"])
+            if token is not None:
+                res = requests.get(self.__baseURL + "login?token=" + token)
+                res.raise_for_status()
+                self.__cookies = res.cookies
+                self.logger.debug(json.loads(res.content)["message"])
+            else:
+                self.logger.info("You will need to use your token to log in SolarDB")
         except requests.exceptions.HTTPError:
             self.logger.warning(
                                 "login -> HTTP Error: ",
@@ -414,7 +414,7 @@ class SolarDB():
         sites : list[str]
             This list is used to specify the sites for which we will search the bounds.
         types : list[str]
-            This list is used to specify sensor types used to recover the bounds.
+            This list is used to specify sensor types used to recover in SolarDB.
         sensors : list[str]
             This list is used to specify the sensors used to recover the bounds.
 
@@ -774,7 +774,7 @@ class SolarDB():
 
     ## Utils
 
-    def getSiteDataframe(self, site:str, start:str = None, stop:str = None):
+    def getSiteDataframe(self, site:str, sensor_types:list[str] = None, start:str = None, stop:str = None):
         """
         Extracts a CSV file containing the data associated to a site and converts it into
         a pandas dataframe object. The user can choose the time period on which the extraction
@@ -798,6 +798,8 @@ class SolarDB():
         stop : str (OPTIONAL)
             This string specifies the ending date for the data recovery. It follows the same
             format as "start".
+        types : list[str]
+            This list is used to specify sensor types to recover in SolarDB.
 
         Returns
         -------
@@ -822,12 +824,15 @@ class SolarDB():
             args += "&start=" + start
         if stop is not None:
             args += "&stop=" + stop
+        if sensor_types is not None:
+            args += "&type=" + ','.join(sensor_types)
         if args != "":
             query += "?" + args
         try:
             res = requests.get(query, cookies=self.__cookies)
             res.raise_for_status()
             df = pd.read_csv(StringIO(res.text))
+            self.logger.debug("pandas dataframe succesfully extracted")
             return df
         except requests.exceptions.HTTPError:
             self.logger.warning("getData -> HTTP Error: ", json.loads(res.content)["message"])
@@ -838,7 +843,7 @@ class SolarDB():
         except requests.exceptions.RequestException as err:
             self.logger.warning("getData -> Request Error: ",err)
 
-    def setloggerLevel(self, val:int):
+    def setLoggerLevel(self, val:int):
         """
         Changes the logging level. It is used to enable and/or disable the messages.
         
@@ -869,6 +874,6 @@ class SolarDB():
         """
         Checks if the current version of this package is the latest.
         """
-        is_outdated, latest_version = outdated.check_outdated("pysolardb", __version__)
+        is_outdated, latest_version = outdated.check_outdated("pysolardb", sample.__version__)
         if is_outdated:
             print("A newer version of the pySolarDB package is currently available: pysolardb ", latest_version)

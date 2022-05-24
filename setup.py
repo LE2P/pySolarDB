@@ -1,18 +1,19 @@
 from setuptools import setup
+from pysolardb import sample
 
 with open("README.md", "r") as readme:
     long_description = readme.read()
 
 setup(
     name='pysolardb',
-    version="0.1.6",
+    version=sample.__version__,
     description='Package used to access the LE2P solar database SolarDB',
     url='https://github.com/LE2P/pySolarDB',
-    author="Emmanuel Parfait",
+    author=sample.__author__,
     author_email='manuparfait@gmail.com',
     license='MIT',
     include_package_data=True,
-    packages=['pysolardb'],
+    packages=['pysolardb', 'pysolardb.sample'],
     install_requires=[
                       'requests>=2.25.1',
                       'pandas>=1.4.2'
