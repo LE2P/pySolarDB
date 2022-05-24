@@ -1,15 +1,14 @@
 from setuptools import setup
-import pysolardb.__init__ as init
 
 with open("README.md", "r") as readme:
     long_description = readme.read()
 
 setup(
     name='pysolardb',
-    version=init.__version__,
+    version="0.1.6",
     description='Package used to access the LE2P solar database SolarDB',
     url='https://github.com/LE2P/pySolarDB',
-    author=init.__author__,
+    author="Emmanuel Parfait",
     author_email='manuparfait@gmail.com',
     license='MIT',
     include_package_data=True,
