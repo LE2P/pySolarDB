@@ -172,13 +172,13 @@ The `getBounds` method returns a dictionary containing the active time period pe
 # get the temporal bounds of each sensor at Saint Louis Lycée Jean Joly
 alias= ['saintlouisjeanjoly']
 dtype = ['GHI']
-sensors = solar.getSensors(types=dtype, sites=alias)
-bounds = []
-for sensor in sensors:
-    bound = solar.getBounds(sites=alias, types=dtype, sensors=[sensor])
-    bounds.append(sensor + "= start: " + bound.get(alias[0]).get(sensor).get("start") \
-                         + " | stop: " + bound.get(alias[0]).get(sensor).get("stop"))
-print("\n".join(bounds))
+bounds = solar.getBounds(types=dtype, sites=alias)
+prettyBounds = []
+for site in bounds:
+    for sensor in bounds[site]:
+        prettyBounds.append(sensor + "= start: " + bounds[site][sensor]["start"] \
+                             + " | stop: " + bounds[site][sensor]["stop"])
+print("\n".join(prettyBounds))
 ```
 
 ### Dataframe recovery
