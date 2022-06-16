@@ -16,7 +16,8 @@ setup(
     packages=['pysolardb', 'pysolardb.sample'],
     install_requires=[
                       'requests>=2.25.1',
-                      'pandas>=1.4.2'
+                      'pandas>=1.4.2',
+                      'outdated>=0.2.1'
                       ],
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -28,7 +29,7 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Operating System :: POSIX :: Linux',
-        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Scientific/Engineering'
     ]
 )

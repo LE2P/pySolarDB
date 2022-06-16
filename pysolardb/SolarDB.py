@@ -202,11 +202,11 @@ class SolarDB():
 
     def getAllTypes(self):
         """
-        Returns all the data types accessible through SolarDB.
+        Returns all the sensor types accessible through SolarDB.
 
         Returns
         -------
-            A list every data type present in SolarDB.
+            A list every sensor type present in SolarDB.
 
         Raises
         ------
@@ -221,14 +221,14 @@ class SolarDB():
             In case an error that is unaccounted for happens
         """
 
-        types = []
+        sensor_types = []
         try:
             res = requests.get(self.__baseURL + "data/types", cookies=self.__cookies)
             res.raise_for_status()
             for i in range(len(json.loads(res.content)["data"])):
-                types.append(json.loads(res.content)["data"][i])
+                sensor_types.append(json.loads(res.content)["data"][i])
             self.logger.debug("All data types successfully extracted from SolarDB")
-            return types
+            return sensor_types
         except requests.exceptions.HTTPError:
             self.logger.warning("getAllTypes -> HTTP Error: ", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
@@ -238,16 +238,16 @@ class SolarDB():
         except requests.exceptions.RequestException as err:
             self.logger.warning("getAllTypes -> Request Error: ",err)
 
-    def getSensors(self, sites:list[str] = None, types:list[str] = None):
+    def getSensors(self, sites:list = None, sensor_types:list = None):
         """
         Returns sensors present in SolarDB by sites and/or types.
         If no sites or types are given, returns all sensors present in SolarDB
 
         Parameters
         ----------
-        sites : list[str] (OPTIONAL)
+        sites : list (OPTIONAL)
             This list is used to specify the sites in which we will search the sensors.
-        types : list[str] (OPTIONAL)
+        sensor_types : list (OPTIONAL)
             This list is used to specify sensor types to recover.
 
         Returns
@@ -271,8 +271,8 @@ class SolarDB():
         args = ""
         if sites is not None:
             args += "&site=" + ','.join(sites)
-        if types is not None:
-            args += "&type=" + ','.join(types)
+        if sensor_types is not None:
+            args += "&type=" + ','.join(sensor_types)
         if args != "":
             query += "?" + args
         try:
@@ -292,9 +292,9 @@ class SolarDB():
 
     def getData(
                 self,
-                sites:list[str] = None,
-                types:list[str] = None,
-                sensors:list[str] = None,
+                sites:list = None,
+                sensor_types:list = None,
+                sensors:list = None,
                 start:str = None,
                 stop:str = None,
                 aggrFn:str = None,
@@ -307,11 +307,11 @@ class SolarDB():
 
         Parameters
         ----------
-        sites : list[str]
+        sites : list
             This list is used to specify the sites for which we will search the data.
-        types : list[str]
+        sensor_types : list
             This list is used to specify sensor types used to recover the data.
-        sensors : list[str]
+        sensors : list
             This list is used to specify the sensors used to recover the data.
         start : str (OPTIONAL)
             This string specifies the starting date for the data recovery. It either follows
@@ -366,8 +366,8 @@ class SolarDB():
         args = ""
         if sites is not None:
             args += "&site=" + ','.join(sites)
-        if types is not None:
-            args += "&type=" + ','.join(types)
+        if sensor_types is not None:
+            args += "&type=" + ','.join(sensor_types)
         if sensors is not None:
             args += "&sensorid=" + ','.join(sensors)
         if start is not None:
@@ -401,9 +401,9 @@ class SolarDB():
 
     def getBounds(
                   self,
-                  sites:list[str] = None,
-                  types:list[str] = None,
-                  sensors:list[str] = None
+                  sites:list = None,
+                  sensor_types:list = None,
+                  sensors:list = None
                   ):
         """
         Extracts the temporal bounds of each sensor associated to at least one site, sensor
@@ -411,11 +411,11 @@ class SolarDB():
 
         Parameters
         ----------
-        sites : list[str]
+        sites : list
             This list is used to specify the sites for which we will search the bounds.
-        types : list[str]
+        sensor_types : list
             This list is used to specify sensor types used to recover in SolarDB.
-        sensors : list[str]
+        sensors : list
             This list is used to specify the sensors used to recover the bounds.
 
         Returns
@@ -448,8 +448,8 @@ class SolarDB():
         args = ""
         if sites is not None:
             args += "&site=" + ','.join(sites)
-        if types is not None:
-            args += "&type=" + ','.join(types)
+        if sensor_types is not None:
+            args += "&type=" + ','.join(sensor_types)
         if sensors is not None:
             args += "&sensorid=" + ','.join(sensors)
         if args != "":
@@ -630,8 +630,8 @@ class SolarDB():
     def getMeasures(
                     self,
                     ids:str = None,
-                    names:list[str] = None,
-                    dtype:str = None,
+                    names:list = None,
+                    measure_type:str = None,
                     nested:bool = None
                     ):
         """
@@ -643,10 +643,10 @@ class SolarDB():
         ids : str (OPTIONAL)
             This string is the identity key. It corresponds to the '_id' field in the Mongo
             'measures' collection.
-        names : list[str] (OPTIONAL)
+        names : list (OPTIONAL)
             This corresponds to the sensor/s name/s and is associated to the 'name' field
             in the Mongo 'measures' collection.
-        dtype : list[str] (OPTIONAL)
+        measure_type : list (OPTIONAL)
             This string represents the data type and is associated to the 'type' field in the
             Mongo 'measures' collection.
         nested : bool (OPTIONAL)
@@ -677,8 +677,8 @@ class SolarDB():
             args += "&id=" + ids
         if names is not None:
             args += "&name=" + ','.join(names)
-        if dtype is not None:
-            args += "&type=" + dtype
+        if measure_type is not None:
+            args += "&type=" + measure_type
         if nested is not None:
             args += "&nested=" + str(nested)
         if args != "":
@@ -706,7 +706,7 @@ class SolarDB():
                   self,
                   ids:str = None,
                   name:str = None,
-                  dtype:str = None
+                  model_type:str = None
                   ):
         """
         Returns the models used in the IOS-Net project. Specifying the id, name and/or data
@@ -720,7 +720,7 @@ class SolarDB():
         name : str (OPTIONAL)
             This corresponds to the station official name and is associated to the 'name'
             field in the Mongo 'models' collection.
-        dtype : str (OPTIONAL)
+        model_type : str (OPTIONAL)
             This string represents the data type and is associated to the 'type' field in
             the Mongo 'models' collection.
 
@@ -748,8 +748,8 @@ class SolarDB():
             args += "&id=" + ids
         if name is not None:
             args += "&name=" + name
-        if dtype is not None:
-            args += "&type=" + dtype
+        if model_type is not None:
+            args += "&type=" + model_type
         if args != "":
             query += "?" + args
         
@@ -774,7 +774,7 @@ class SolarDB():
 
     ## Utils
 
-    def getSiteDataframe(self, site:str, sensor_types:list[str] = None, start:str = None, stop:str = None):
+    def getSiteDataframe(self, site:str, sensor_types:list = None, start:str = None, stop:str = None):
         """
         Extracts a CSV file containing the data associated to a site and converts it into
         a pandas dataframe object. The user can choose the time period on which the extraction
@@ -798,7 +798,7 @@ class SolarDB():
         stop : str (OPTIONAL)
             This string specifies the ending date for the data recovery. It follows the same
             format as "start".
-        types : list[str]
+        sensor_types : list
             This list is used to specify sensor types to recover in SolarDB.
 
         Returns

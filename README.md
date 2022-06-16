@@ -4,7 +4,8 @@ Python library to access LE2P solar database SolarDB
 
 Source code accessible via the github repository: [pySolarDB](https://github.com/LE2P/pySolarDB)
 
-__REQUIREMENT__: You will need to use a python more recent than python 3.10 (included)
+__REQUIREMENT__: You will need to either use a python version superior or equal to python3.10 or 
+                 install a `.bz2` support package and the `libffi` package on your machine (libbz2-dev and libffi-dev for Ubuntu) 
 
 ## Installation
 
@@ -39,6 +40,9 @@ solar.setLoggerLevel(30)
 ```
 
 Keep in mind that the requests will sometimes result in empty answers. Setting the logger level to a lower level might help identifying such cases.
+
+## CLass Diagram
+![class_diagram](./img/class_diagram.png)
 
 ## Utils methods: Register, Login, Status and Logout
 
