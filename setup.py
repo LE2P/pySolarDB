@@ -15,10 +15,11 @@ setup(
     include_package_data=True,
     packages=['pysolardb', 'pysolardb.sample'],
     install_requires=[
-                      'requests>=2.25.1',
-                      'pandas>=1.4.2',
-                      'outdated>=0.2.1'
-                      ],
+        'outdated>=0.2.1',
+        'pandas>=1.4.2',
+        'requests>=2.25.1',
+        'urllib3>=1.26.9'
+    ],
     long_description=long_description,
     long_description_content_type='text/markdown',
     classifiers=[
