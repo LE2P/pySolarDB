@@ -612,7 +612,7 @@ class SolarDB():
             query += "?" + args
 
         try:
-            res = requests.get(query, cookies=self.__cookies)
+            res = requests.get(query, cookies=self.__cookies, verify=self.__verify)
             res.raise_for_status()
             instruments = json.loads(res.content)["data"]
             if instruments:
@@ -687,7 +687,7 @@ class SolarDB():
             query += "?" + args
 
         try:
-            res = requests.get(query, cookies=self.__cookies)
+            res = requests.get(query, cookies=self.__cookies, verify=self.__verify)
             res.raise_for_status()
             measures = json.loads(res.content)["data"]
             if measures:
@@ -756,7 +756,7 @@ class SolarDB():
             query += "?" + args
 
         try:
-            res = requests.get(query, cookies=self.__cookies)
+            res = requests.get(query, cookies=self.__cookies, verify=self.__verify)
             res.raise_for_status()
             models = json.loads(res.content)["data"]
             if models:
@@ -830,7 +830,7 @@ class SolarDB():
         if args != "":
             query += "?" + args
         try:
-            res = requests.get(query, cookies=self.__cookies)
+            res = requests.get(query, cookies=self.__cookies, verify=self.__verify)
             res.raise_for_status()
             df = pd.read_csv(StringIO(res.text))
             self.logger.debug("pandas dataframe succesfully extracted")
