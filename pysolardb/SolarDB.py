@@ -14,6 +14,7 @@ class SolarDB():
     def __init__(self, token: str = None, logging_level: int = 10, apiURL: str = "solardb.univ-reunion.fr", skipSSL: bool = False):
         self.checkIfOutdated()
         self.__baseURL = "https://" + apiURL + "/api/v1/"
+        ## Used to ingore the SSL certification
         self.__verify = not skipSSL
         if skipSSL:
             requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
@@ -106,8 +107,12 @@ class SolarDB():
 
     def status(self):
         """
-        This method is used to verify if you are still logged in. It becomes obsolete if
-        the logging level is higher than INFO.
+        This method is used to verify if you are still logged in.
+
+        Returns
+        -------
+
+        A boolean representing the user's connection status.
 
         Raises
         ------
@@ -123,8 +128,12 @@ class SolarDB():
         """
 
         try:
+            logged_in = False
             res = requests.get(self.__baseURL + "status", cookies=self.__cookies, verify=self.__verify)
+            if json.loads(res.content)["message"] == "User connected":
+                logged_in = True
             self.logger.info(json.loads(res.content)["message"])
+            return logged_in
         except requests.exceptions.ConnectionError as errc:
             self.logger.warning("status -> Connection Error:", errc)
         except requests.exceptions.Timeout as errt:
