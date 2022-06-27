@@ -8,7 +8,7 @@ setup(
     name='pysolardb',
     version=sample.__version__,
     description='Package used to access the LE2P solar database SolarDB',
-    url='https://github.com/LE2P/pySolarDB',
+    url='https://github.com/LE2P/pysolardb',
     author=sample.__author__,
     author_email='manuparfait@gmail.com',
     license='MIT',

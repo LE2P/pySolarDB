@@ -1,8 +1,8 @@
-# pySolarDB
+# pysolardb
 
 Python library to access LE2P solar database SolarDB
 
-Source code accessible via the github repository: [pySolarDB](https://github.com/LE2P/pySolarDB)
+Source code accessible via the github repository: [pySolarDB](https://github.com/LE2P/pysolardb)
 
 __REQUIREMENT__: You will need to either use a python version superior or equal to python3.10 or 
                  install a `.bz2` support package and the `libffi` package on your machine (libbz2-dev and libffi-dev for Ubuntu) 
