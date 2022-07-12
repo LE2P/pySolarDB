@@ -12,6 +12,8 @@ from urllib3.exceptions import InsecureRequestWarning
 class SolarDB():
 
     def __init__(self, token: str = None, logging_level: int = 10, apiURL: str = "solardb.univ-reunion.fr", skipSSL: bool = False):
+        self.logger = logging.getLogger(__name__)
+        self.setLoggerLevel(logging_level)
         self.checkIfOutdated()
         self.__baseURL = "https://" + apiURL + "/api/v1/"
         ## Used to ingore the SSL certification
@@ -19,8 +21,6 @@ class SolarDB():
         if skipSSL:
             requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
         self.__cookies = None
-        self.logger = logging.getLogger(__name__)
-        self.setLoggerLevel(logging_level)
         ## Automatically logs in SolarDB if the token is saved in the '~/.bashrc' file
         if token is None:
             token = os.environ.get('SolarDBToken')
@@ -886,4 +886,4 @@ class SolarDB():
         """
         is_outdated, latest_version = outdated.check_outdated("pysolardb", sample.__version__)
         if is_outdated:
-            print("A newer version of the pySolarDB package is currently available: pysolardb ", latest_version)
+            self.logger.warning("A newer version of the pySolarDB package is currently available: pysolardb ", latest_version)
