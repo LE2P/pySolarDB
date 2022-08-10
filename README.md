@@ -109,12 +109,12 @@ solar.getAllTypes()
 
 The `getSensors` method returns a list of strings containing the sensor IDs extracted from SolarDB. To narrow down the sensors, use the following parameters:
 - sites : list[str] (optional)
-- types : list[str] (optional)
+- sensor_types : list[str] (optional)
 
 ```python
 solar.getSensors()
 # search the diffuse and global irradiance sensors at Le Port Mairie
-solar.getSensors(sites=["leportmairie"], types=["DHI","GHI"])
+solar.getSensors(sites=["leportmairie"], sensor_types=["DHI","GHI"])
 ```
 
 ## Data collection
@@ -125,7 +125,7 @@ __Note__: The following data recovery methods will return empty dictionaries unl
 
 The `getData` method recovers all the data associated to a list of alias sites, types and/or sensor IDs. It takes at least one of the following parameters:
 - sites : list[string]
-- types : list[string]
+- sensor_types : list[string]
 - sensors : list[string]
 - start : string (optional)
 - stop : string (optional)
@@ -133,8 +133,8 @@ The `getData` method recovers all the data associated to a list of alias sites, 
 - aggrEvery : string (optional)
 
 ```python
-# get the global irradiance values from Vacaos and Plaine Des Palmistes Parc National taking the average value for each day over the last 2 months
-data = solar.getData(sites=["plaineparcnational","vacoas"], types=["GHI"], start="-2y", aggrFn="mean", aggrEvery="1w")
+# get the global irradiance and air temperature values from Vacaos and Plaine Des Palmistes Parc National taking the average value for each week over the last 2 years
+data = solar.getData(sites=["plaineparcnational","vacoas"], sensor_types=["GHI"], start="-2y", aggrFn="mean", aggrEvery="1w")
 ```
 
 The data we just collected can then be used to plot the evolution of the global irradiance:
@@ -144,21 +144,21 @@ import matplotlib.pyplot as plt
 from datetime import datetime as dt
 
 alias = ["plaineparcnational","vacoas"]
-dtype = ["GHI"]
-data = solar.getData(sites=alias, types=dtype, start="-2y", aggrFn="mean", aggrEvery="1d")
+dtype = ["GHI", "TA"]
+data = solar.getData(sites=alias, sensor_types=dtype, start="-2y", aggrFn="mean", aggrEvery="1w")
 
-# extract the dates and values for Vacoas from the 'data' dictionary
-sensors = solar.getSensors(sites=["plaineparcnational"], types=["GHI"])
+# extract the global irradiance dates and values for Vacoas from the 'data' dictionary
+sensors = solar.getSensors(sites=[alias[1]], sensor_types=["GHI"])
 
 plt.figure()
 for sensor in sensors:
-    dates = data["plaineparcnational"][sensor]["dates"]
-    values = data["plaineparcnational"][sensor]["values"]
+    dates = data[alias[1]][sensor]["dates"]
+    values = data[alias[1]][sensor]["values"]
 
-    # put the dates to a datetime format
+    # change the dates to a datetime format
     dates = [dt.strptime(date, "%Y-%m-%dT%H:%M:%SZ") for date in dates]
 
-    # plot the average global irradiance per day for the last 2 years
+    # plot the average global irradiance per week for the last 2 years
 
     plt.plot(dates, values)
 plt.legend(labels=sensors)
@@ -169,14 +169,14 @@ plt.show()
 
 The `getBounds` method returns a dictionary containing the active time period per sensor per site. it takes at least one of the following the parameters:
 - sites : list[string] (optional)
-- types : list[string] (optional)
+- sensor_types : list[string] (optional)
 - sensors : list[string] (optional)
 
 ```python
 # get the temporal bounds of each sensor at Saint Louis Lycée Jean Joly
 alias= ['saintlouisjeanjoly']
 dtype = ['GHI']
-bounds = solar.getBounds(types=dtype, sites=alias)
+bounds = solar.getBounds(sensor_types=dtype, sites=alias)
 prettyBounds = []
 for site in bounds:
     for sensor in bounds[site]:
@@ -187,14 +187,24 @@ print("\n".join(prettyBounds))
 
 ### Dataframe recovery
 
-the `getSiteDataframe` method returns a pandas dataframe containing the data associated to a site for a requested time period. this dataframe can then be converted to a CSV file using the pandas library:
+The `getSiteDataframe` method returns a pandas dataframe containing the data associated to a site for a requested time period using the following parameters:
+- site : string
+- sensor_types : list[string] (optional)
+- start : string (optional)
+- stop : string (optional)
+
+This dataframe can then be converted to a CSV file using the pandas library:
 
 ```python
 # get the pandas dataframe of the data for Amitié over the last week
 df = solar.getSiteDataframe(site="amitie", start="-1w")
-print(df)
-# save the pandas dataframe in a CSV file
-df.to_csv("FILEPATH"+"FILENAME.csv")
+# print the first rows of our dataframe
+print(df.head())
+# save the dataframe in a CSV file
+try:
+    df.to_csv("FILEPATH"+"FILENAME.csv")
+except Exception as e:
+    solar.logger.warning(e)
 ```
 
 ## Metadata recovery
@@ -230,13 +240,13 @@ solar.getInstruments()
 The `getMeasures` method recovers the metadata that is associated with the different types of measures. You can use the parameters:
 - id : string (optional)
 - name : string (optional)
-- dtype : string (optional)
+- measure_type : string (optional)
 - nested : boolean (optional)
 
 ```python
 solar.getMeasures()
 # get the metadata for UV measures
-solar.getMeasures(type="UVAB")
+solar.getMeasures(measure_type="UVAB")
 ```
 
 ### Recover the models' metadata
@@ -244,7 +254,7 @@ solar.getMeasures(type="UVAB")
 The `getModels` method recovers the metadata associated to the sensor types. You can use these parameters :
 - id : string (optional)
 - name : string (optional)
-- dtype : string (optional)
+- model_type : string (optional)
 
 ```python
 solar.getModels()

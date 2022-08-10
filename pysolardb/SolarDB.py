@@ -59,16 +59,13 @@ class SolarDB():
             else:
                 self.logger.info("You will need to use your token to log in SolarDB")
         except requests.exceptions.HTTPError:
-            self.logger.warning(
-                "login -> HTTP Error: ",
-                json.loads(res.content)["message"]
-            )
+            self.logger.warning("login -> HTTP Error:\n%s\n",json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
-            self.logger.warning("login -> Connection Error:", errc)
+            self.logger.warning("login -> Connection Error:\n%s\n", errc)
         except requests.exceptions.Timeout as errt:
-            self.logger.warning("login -> Timeout Error:", errt)
+            self.logger.warning("login -> Timeout Error:\n%s\n", errt)
         except requests.exceptions.RequestException as err:
-            self.logger.warning("login -> Request Error: ", err)
+            self.logger.warning("login -> Request Error:\n%s\n", err)
 
     def register(self, email: str):
         """
@@ -97,13 +94,13 @@ class SolarDB():
             res.raise_for_status()
             self.logger.debug(json.loads(res.content)["message"])
         except requests.exceptions.HTTPError:
-            self.logger.warning("register -> HTTP Error: ", json.loads(res.content)["message"])
+            self.logger.warning("register -> HTTP Error:\n%s%s", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
-            self.logger.warning("register -> Connection Error:", errc)
+            self.logger.warning("register -> Connection Error:\n%s\n", errc)
         except requests.exceptions.Timeout as errt:
-            self.logger.warning("register -> Timeout Error:", errt)
+            self.logger.warning("register -> Timeout Error:\n%s\n", errt)
         except requests.exceptions.RequestException as err:
-            self.logger.warning("register -> Request Error: ", err)
+            self.logger.warning("register -> Request Error:\n%s\n", err)
 
     def status(self):
         """
@@ -135,11 +132,11 @@ class SolarDB():
             self.logger.info(json.loads(res.content)["message"])
             return logged_in
         except requests.exceptions.ConnectionError as errc:
-            self.logger.warning("status -> Connection Error:", errc)
+            self.logger.warning("status -> Connection Error:\n%s\n", errc)
         except requests.exceptions.Timeout as errt:
-            self.logger.warning("status -> Timeout Error:", errt)
+            self.logger.warning("status -> Timeout Error:\n%s\n", errt)
         except requests.exceptions.RequestException as err:
-            self.logger.warning("status -> Request Error: ", err)
+            self.logger.warning("status -> Request Error:\n%s\n", err)
 
     def logout(self):
         """
@@ -164,13 +161,13 @@ class SolarDB():
             self.logger.debug(json.loads(res.content)["message"])
             self.__cookies = None
         except requests.exceptions.HTTPError:
-            self.logger.warning("logout -> HTTP Error: ", json.loads(res.content)["message"])
+            self.logger.warning("logout -> HTTP Error:\n%s\n", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
-            self.logger.warning("logout -> Connection Error:", errc)
+            self.logger.warning("logout -> Connection Error:\n%s\n", errc)
         except requests.exceptions.Timeout as errt:
-            self.logger.warning("logout -> Timeout Error:", errt)
+            self.logger.warning("logout -> Timeout Error:\n%s\n", errt)
         except requests.exceptions.RequestException as err:
-            self.logger.warning("logout -> Request Error: ", err)
+            self.logger.warning("logout -> Request Error:\n%s\n", err)
 
     ## Methods to recover the data -------------------------------------------------------
 
@@ -204,13 +201,13 @@ class SolarDB():
             self.logger.debug("All data sites successfully extracted from SolarDB")
             return sites
         except requests.exceptions.HTTPError:
-            self.logger.warning("getAllSites -> HTTP Error: ", json.loads(res.content)["message"])
+            self.logger.warning("getAllSites -> HTTP Error:\n%s\n", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
-            self.logger.warning("getAllSites -> Connection Error:", errc)
+            self.logger.warning("getAllSites -> Connection Error:\n%s\n", errc)
         except requests.exceptions.Timeout as errt:
-            self.logger.warning("getAllSites -> Timeout Error:", errt)
+            self.logger.warning("getAllSites -> Timeout Error:\n%s\n", errt)
         except requests.exceptions.RequestException as err:
-            self.logger.warning("getAllSites -> Request Error: ", err)
+            self.logger.warning("getAllSites -> Request Error:\n%s\n", err)
 
     def getAllTypes(self):
         """
@@ -242,13 +239,13 @@ class SolarDB():
             self.logger.debug("All data types successfully extracted from SolarDB")
             return sensor_types
         except requests.exceptions.HTTPError:
-            self.logger.warning("getAllTypes -> HTTP Error: ", json.loads(res.content)["message"])
+            self.logger.warning("getAllTypes -> HTTP Error:\n%s\n", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
-            self.logger.warning("getAllTypes -> Connection Error:", errc)
+            self.logger.warning("getAllTypes -> Connection Error:\n%s\n", errc)
         except requests.exceptions.Timeout as errt:
-            self.logger.warning("getAllTypes -> Timeout Error:", errt)
+            self.logger.warning("getAllTypes -> Timeout Error:\n%s\n", errt)
         except requests.exceptions.RequestException as err:
-            self.logger.warning("getAllTypes -> Request Error: ", err)
+            self.logger.warning("getAllTypes -> Request Error:\n%s\n", err)
 
     def getSensors(self, sites: list = None, sensor_types: list = None):
         """
@@ -294,13 +291,13 @@ class SolarDB():
             self.logger.debug("All sensors successfully extracted from SolarDB")
             return sensors
         except requests.exceptions.HTTPError:
-            self.logger.warning("getSensors -> HTTP Error: ", json.loads(res.content)["message"])
+            self.logger.warning("getSensors -> HTTP Error:\n%s\n", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
-            self.logger.warning("getSensors -> Connection Error:", errc)
+            self.logger.warning("getSensors -> Connection Error:\n%s\n", errc)
         except requests.exceptions.Timeout as errt:
-            self.logger.warning("getSensors -> Timeout Error:", errt)
+            self.logger.warning("getSensors -> Timeout Error:\n%s\n", errt)
         except requests.exceptions.RequestException as err:
-            self.logger.warning("getSensors -> Request Error: ", err)
+            self.logger.warning("getSensors -> Request Error:\n%s\n", err)
 
     def getData(
             self,
@@ -353,7 +350,7 @@ class SolarDB():
         -------
             A dictionary containing the data per site and sensor. It is structured as 
             follows:
-            data{
+            {
                 site{
                     sensor{
                         dates:  [...]
@@ -403,13 +400,13 @@ class SolarDB():
                 self.logger.info("There is no data for this particular request")
             return data
         except requests.exceptions.HTTPError:
-            self.logger.warning("getData -> HTTP Error: ", json.loads(res.content)["message"])
+            self.logger.warning("getData -> HTTP Error:\n%s\n", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
-            self.logger.warning("getData -> Connection Error:", errc)
+            self.logger.warning("getData -> Connection Error:\n%s\n", errc)
         except requests.exceptions.Timeout as errt:
-            self.logger.warning("getData -> Timeout Error:", errt)
+            self.logger.warning("getData -> Timeout Error:\n%s\n", errt)
         except requests.exceptions.RequestException as err:
-            self.logger.warning("getData -> Request Error: ", err)
+            self.logger.warning("getData -> Request Error:\n%s\n", err)
 
     def getBounds(
             self,
@@ -433,7 +430,7 @@ class SolarDB():
         Returns
         -------
             A dictionary containing the bounds per site and sensor structured as follows:
-            data{
+            {
                 site{
                     sensor{
                         start:  "..."
@@ -477,13 +474,13 @@ class SolarDB():
                 self.logger.info("The bounds defined by this request are null")
             return bounds
         except requests.exceptions.HTTPError:
-            self.logger.warning("getBounds -> HTTP Error: ", json.loads(res.content)["message"])
+            self.logger.warning("getBounds -> HTTP Error:\n%s\n", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
-            self.logger.warning("getBounds -> Connection Error:", errc)
+            self.logger.warning("getBounds -> Connection Error:\n%s\n", errc)
         except requests.exceptions.Timeout as errt:
-            self.logger.warning("getBounds -> Timeout Error:", errt)
+            self.logger.warning("getBounds -> Timeout Error:\n%s\n", errt)
         except requests.exceptions.RequestException as err:
-            self.logger.warning("getBounds -> Request Error: ", err)
+            self.logger.warning("getBounds -> Request Error:\n%s\n", err)
 
     ## Methods to recover the metadata ----------------------------------------------------
 
@@ -555,13 +552,13 @@ class SolarDB():
                 self.logger.info("The campaigns defined by this request do not exist")
             return campaigns
         except requests.exceptions.HTTPError:
-            self.logger.warning("getCampaigns -> HTTP Error: ", json.loads(res.content)["message"])
+            self.logger.warning("getCampaigns -> HTTP Error:\n%s\n", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
-            self.logger.warning("getCampaigns -> Connection Error:", errc)
+            self.logger.warning("getCampaigns -> Connection Error:\n%s\n", errc)
         except requests.exceptions.Timeout as errt:
-            self.logger.warning("getCampaigns -> Timeout Error:", errt)
+            self.logger.warning("getCampaigns -> Timeout Error:\n%s\n", errt)
         except requests.exceptions.RequestException as err:
-            self.logger.warning("getCampaigns -> Request Error: ", err)
+            self.logger.warning("getCampaigns -> Request Error:\n%s\n", err)
 
     def getInstruments(
             self,
@@ -630,13 +627,13 @@ class SolarDB():
                 self.logger.info("The intstruments defined by this request do not exist")
             return instruments
         except requests.exceptions.HTTPError:
-            self.logger.warning("getInstruments -> HTTP Error: ", json.loads(res.content)["message"])
+            self.logger.warning("getInstruments -> HTTP Error:\n%s\n", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
-            self.logger.warning("getInstruments -> Connection Error:", errc)
+            self.logger.warning("getInstruments -> Connection Error:\n%s\n", errc)
         except requests.exceptions.Timeout as errt:
-            self.logger.warning("getInstruments -> Timeout Error:", errt)
+            self.logger.warning("getInstruments -> Timeout Error:\n%s\n", errt)
         except requests.exceptions.RequestException as err:
-            self.logger.warning("getInstruments -> Request Error: ", err)
+            self.logger.warning("getInstruments -> Request Error:\n%s\n", err)
 
     def getMeasures(
             self,
@@ -705,13 +702,13 @@ class SolarDB():
                 self.logger.info("The measures defined by this request do not exist")
             return measures
         except requests.exceptions.HTTPError:
-            self.logger.warning("getMeasures -> HTTP Error: ", json.loads(res.content)["message"])
+            self.logger.warning("getMeasures -> HTTP Error:\n%s\n", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
-            self.logger.warning("getMeasures -> Connection Error:", errc)
+            self.logger.warning("getMeasures -> Connection Error:\n%s\n", errc)
         except requests.exceptions.Timeout as errt:
-            self.logger.warning("getMeasures -> Timeout Error:", errt)
+            self.logger.warning("getMeasures -> Timeout Error:\n%s\n", errt)
         except requests.exceptions.RequestException as err:
-            self.logger.warning("getMeasures -> Request Error: ", err)
+            self.logger.warning("getMeasures -> Request Error:\n%s\n", err)
 
     def getModels(
             self,
@@ -774,13 +771,13 @@ class SolarDB():
                 self.logger.info("The measures defined by this request do not exist")
             return models
         except requests.exceptions.HTTPError:
-            self.logger.warning("getModels -> HTTP Error: ", json.loads(res.content)["message"])
+            self.logger.warning("getModels -> HTTP Error:\n%s\n", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
-            self.logger.warning("getModels -> Connection Error:", errc)
+            self.logger.warning("getModels -> Connection Error:\n%s\n", errc)
         except requests.exceptions.Timeout as errt:
-            self.logger.warning("getModels -> Timeout Error:", errt)
+            self.logger.warning("getModels -> Timeout Error:\n%s\n", errt)
         except requests.exceptions.RequestException as err:
-            self.logger.warning("getModels -> Request Error: ", err)
+            self.logger.warning("getModels -> Request Error:\n%s\n", err)
 
     ## Utils
 
@@ -841,17 +838,21 @@ class SolarDB():
         try:
             res = requests.get(query, cookies=self.__cookies, verify=self.__verify)
             res.raise_for_status()
-            df = pd.read_csv(StringIO(res.text))
-            self.logger.debug("pandas dataframe succesfully extracted")
-            return df
+            try:
+                df = pd.read_csv(StringIO(res.text))
+                self.logger.debug("pandas dataframe succesfully extracted")
+                return df
+            except pd.errors.EmptyDataError:
+                self.logger.warning("There is no data for the given parameters. Please change your request.")
+                return None
         except requests.exceptions.HTTPError:
-            self.logger.warning("getData -> HTTP Error: ", json.loads(res.content)["message"])
+            self.logger.warning("getData -> HTTP Error:\n%s\n", json.loads(res.content)["message"])
         except requests.exceptions.ConnectionError as errc:
-            self.logger.warning("getData -> Connection Error:", errc)
+            self.logger.warning("getData -> Connection Error:\n%s\n", errc)
         except requests.exceptions.Timeout as errt:
-            self.logger.warning("getData -> Timeout Error:", errt)
+            self.logger.warning("getData -> Timeout Error:\n%s\n", errt)
         except requests.exceptions.RequestException as err:
-            self.logger.warning("getData -> Request Error: ", err)
+            self.logger.warning("getData -> Request Error:\n%s\n", err)
 
     def setLoggerLevel(self, val: int):
         """
