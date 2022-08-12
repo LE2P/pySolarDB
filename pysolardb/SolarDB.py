@@ -885,6 +885,17 @@ class SolarDB():
         """
         Checks if the current version of this package is the latest.
         """
-        is_outdated, latest_version = outdated.check_outdated("pysolardb", sample.__version__)
-        if is_outdated:
-            self.logger.warning("A newer version of the pySolarDB package is currently available: pysolardb ", latest_version)
+        try:
+            is_outdated, latest_version = outdated.check_outdated("pysolardb", sample.__version__)
+            if is_outdated:
+                self.logger.warning("A newer version (Version %s) of the pysolardb package is available on Pypi", latest_version)
+        except ValueError as errv:
+            self.logger.warning("Versionning error\n%s\n", errv)
+        except requests.exceptions.HTTPError as errh:
+            self.logger.warning("checkIfOutdated -> HTTP Error:\n%s\n", errh)
+        except requests.exceptions.ConnectionError as errc:
+            self.logger.warning("checkIfOutdated -> Connection Error:\n%s\n", errc)
+        except requests.exceptions.Timeout as errt:
+            self.logger.warning("checkIfOutdated -> Timeout Error:\n%s\n", errt)
+        except requests.exceptions.RequestException as err:
+            self.logger.warning("checkIfOutdated -> Request Error:\n%s\n", err)
